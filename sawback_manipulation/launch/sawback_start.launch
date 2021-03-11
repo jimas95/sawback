@@ -2,9 +2,6 @@
   <arg name="fake_execution" default="false"/>
   <arg name="use_rviz" default="false"/>
 
-
-  <include unless="$(arg fake_execution)" file="$(find sawback_manipulation)/launch/grasping.launch"/>
-
   <node unless="$(arg fake_execution)" pkg="intera_interface" type="joint_trajectory_action_server.py" name="joint_trajectory_action_server"/>
   <node unless="$(arg fake_execution)" pkg="intera_interface" type="gripper_action_server.py" name="gripper_action_server"/>
 

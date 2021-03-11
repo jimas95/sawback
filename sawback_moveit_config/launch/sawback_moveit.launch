@@ -1,5 +1,13 @@
 <launch>
 
+
+  <!-- move_group settings -->
+  <arg name="allow_trajectory_execution" default="true"/>
+  <arg name="fake_execution" default="false"/>
+  <arg name="max_safe_path_cost" default="1"/>
+  <arg name="jiggle_fraction" default="0.05" />
+  <arg name="publish_monitored_planning_scene" default="true"/>
+
   <!-- Moveitcpp parmeters 
   <rosparam ns="sawback_moveitcpp" command="load" file="$(find sawback_moveit_config)/config/moveit_cpp.yaml" />
    -->
@@ -21,15 +29,15 @@
   <arg     if="$(arg info)" name="command_args" value="--debug" />
 
 
+  <!-- Planning Functionality -->
+  <include ns="move_group" file="$(find sawyer_moveit_config)/launch/planning_pipeline.launch.xml">
+    <arg name="pipeline" value="ompl" />
+  </include>
 
-  <!-- Planning Pipeline -->
-  <include ns="/sawback_moveitcpp/ompl"
-    file="$(find sawback_moveit_config)/launch/ompl_planning_pipeline.launch.xml"/>
-
-  <!-- Trajectory execution  -->
-  <include ns="sawback_moveitcpp" file="$(find sawback_moveit_config)/launch/trajectory_execution.launch.xml">
-    <arg name="moveit_controller_manager" value="sawback" unless="$(arg fake_execution)"/>
-    <arg name="moveit_controller_manager" value="fake" if="$(arg fake_execution)"/>
+  <!-- Trajectory Execution Functionality -->
+  <include ns="move_group" file="$(find sawyer_moveit_config)/launch/trajectory_execution.launch.xml" if="$(arg allow_trajectory_execution)">
+    <arg name="moveit_manage_controllers" value="true" />
+    <arg name="moveit_controller_manager" value="sawyer"/>
   </include>
 
   <!-- Load the URDF, SRDF and other .yaml configuration files on the param server -->
@@ -56,12 +64,7 @@
   </node>
 -->
 
-  <!-- move_group settings -->
-  <arg name="allow_trajectory_execution" default="true"/>
-  <arg name="fake_execution" default="false"/>
-  <arg name="max_safe_path_cost" default="1"/>
-  <arg name="jiggle_fraction" default="0.05" />
-  <arg name="publish_monitored_planning_scene" default="true"/>
+
 
   <!-- Start the actual move_group node/action server -->
    <node name="move_group" launch-prefix="$(arg launch_prefix)" pkg="moveit_ros_move_group" type="move_group" respawn="false" output="screen"
